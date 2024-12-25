@@ -1,34 +1,8 @@
 import React, { useState, useEffect } from "react";
 import DealCard from "./DealCard"; 
 
-const Deals = ({ title, description, button, bgcolor, cardLimit }) => {
-  const [deals, setDeals] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      setError(null);
-
-      try {
-        const response = await fetch(
-          "https://www.deelly.com/api/nearby_deals/?format=json"
-        );
-        if (!response.ok) {
-          throw new Error(`Error fetching deals: ${response.statusText}`);
-        }
-        const data = await response.json();
-        setDeals(data.data);
-      } catch (error) {
-        setError(error.message);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
+const Deals = ({ title, description, button, bgcolor, cardLimit,deals,isLoading,error }) => {
+  
 
   return (
     <div className={`bg-${bgcolor} p-16`}>

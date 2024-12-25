@@ -2,10 +2,13 @@ import React, { useEffect, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import "mapbox-gl/dist/mapbox-gl.css";
 import { FaMapMarkerAlt } from 'react-icons/fa';
+import logo2 from '../assets/logo2.png'; // Import default business logo
+import diningIcon from '../assets/dining.png'; // Import the dining icon for restaurants
 
-const MapBox = () => {
+const MapBox = ({ deals }) => {
   const [map, setMap] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
+  const [locationAllowed, setLocationAllowed] = useState(false); // To check if location is allowed
 
   useEffect(() => {
     mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
@@ -14,7 +17,7 @@ const MapBox = () => {
     const mapInstance = new mapboxgl.Map({
       container: 'map',
       style: 'mapbox://styles/mapbox/streets-v11',
-      center: [55.2708, 25.2048], 
+      center: [55.2708, 25.2048], // Default center (Dubai)
       zoom: 10,
     });
 
@@ -26,140 +29,124 @@ const MapBox = () => {
         (position) => {
           const { latitude, longitude } = position.coords;
           setUserLocation([longitude, latitude]);
-
-          // Fly to user location
-          mapInstance.flyTo({
-            center: [longitude, latitude],
-            zoom: 14,
-          });
-
-          // Add user marker
-          new mapboxgl.Marker({ color: 'blue' })
-            .setLngLat([longitude, latitude])
-            .setPopup(new mapboxgl.Popup().setHTML('<h1>Your Location</h1>'))
-            .addTo(mapInstance);
+          setLocationAllowed(true); // Set locationAllowed to true when location is fetched
         },
-        (error) => console.error('Error fetching user location:', error),
+        (error) => console.error('Error fetching user location:', error)
       );
     }
 
-    // Fetch deals and add markers
-    fetch('https://deelly.com/api/nearby_deals/')
-      .then((res) => res.json())
-      .then((response) => {
-        const features = response.data.map((deal) => ({
-          type: 'Feature',
-          geometry: {
-            type: 'Point',
-            coordinates: [
-              parseFloat(deal.location.lng),
-              parseFloat(deal.location.lat),
-            ],
-          },
-          properties: {
-            title: deal.business_deal.title,
-            description: `${deal.store.name} - ${deal.store.category.name}`,
-            address: deal.location.location_detail,
-            image: deal.images.image,
-            logo: deal.store.business_logo,
-          },
-        }));
+    // Convert deals prop into geojson format
+    const features = deals.map((deal) => ({
+      type: 'Feature',
+      geometry: {
+        type: 'Point',
+        coordinates: [
+          parseFloat(deal.location.lng),
+          parseFloat(deal.location.lat),
+        ],
+      },
+      properties: {
+        title: deal.business_deal.title,
+        description: `${deal.store.name} - ${deal.store.category.name}`,
+        address: deal.location.location_detail,
+        image: deal.images.image,
+        logo: logo2, // Always use the default logo for all businesses
+      },
+    }));
 
-        mapInstance.on('load', () => {
-          mapInstance.addSource('deals', {
-            type: 'geojson',
-            data: {
-              type: 'FeatureCollection',
-              features,
-            },
-            cluster: true,
-            clusterMaxZoom: 14,
-            clusterRadius: 50,
-          });
+    mapInstance.on('load', () => {
+      mapInstance.addSource('deals', {
+        type: 'geojson',
+        data: {
+          type: 'FeatureCollection',
+          features,
+        },
+        cluster: true,
+        clusterMaxZoom: 14,
+        clusterRadius: 20,
+      });
 
-          // Add cluster layer
-          mapInstance.addLayer({
-            id: 'clusters',
-            type: 'circle',
-            source: 'deals',
-            filter: ['has', 'point_count'],
-            paint: {
-              'circle-color': '#51bbd6',
-              'circle-radius': 20,
-            },
-          });
+      // Add cluster layer
+      mapInstance.addLayer({
+        id: 'clusters',
+        type: 'circle',
+        source: 'deals',
+        filter: ['has', 'point_count'],
+        paint: {
+          'circle-color': 'green',
+          'circle-radius': 15,
+        },
+      });
 
-          // Add cluster count labels
-          mapInstance.addLayer({
-            id: 'cluster-count',
-            type: 'symbol',
-            source: 'deals',
-            filter: ['has', 'point_count'],
-            layout: {
-              'text-field': '{point_count_abbreviated}',
-              'text-size': 12,
-            },
-          });
+   
 
-          // Add individual points layer
-          mapInstance.addLayer({
-            id: 'unclustered-point',
-            type: 'symbol',
-            source: 'deals',
-            filter: ['!', ['has', 'point_count']],
-            layout: {
-              'icon-image': 'custom-marker',
-              'icon-size': 0.5,
-            },
-          });
+      // Add individual points layer (restaurant icon)
+      mapInstance.addLayer({
+        id: 'unclustered-point',
+        type: 'symbol',
+        source: 'deals',
+        filter: ['!', ['has', 'point_count']],
+        layout: {
+          'icon-image': 'dining-icon', // Custom dining icon for restaurants
+          'icon-size': 0.3,
+        },
+      });
 
-          // Add custom marker icon using React-Icons
-          features.forEach((feature) => {
-            const { coordinates } = feature.geometry;
-            const { title, description, address, image, logo } = feature.properties;
+      // Register custom dining marker icon
+      mapInstance.loadImage(diningIcon, (error, image) => {
+        if (error) throw error;
+        mapInstance.addImage('dining-icon', image);
+      });
 
-            const el = document.createElement('div');
-            el.className = 'marker';
-            el.style.width = '30px';
-            el.style.height = '30px';
-            el.style.display = 'flex';
-            el.style.alignItems = 'center';
-            el.style.justifyContent = 'center';
-            el.style.backgroundColor = 'white';
-            el.style.borderRadius = '50%';
-            el.style.boxShadow = '0 2px 6px rgba(0,0,0,0.3)';
+      // Add custom marker icons for individual points (restaurant icons)
+      features.forEach((feature) => {
+        const { coordinates } = feature.geometry;
+        const { title, description, address, image, logo } = feature.properties;
 
-            // Use React-Icons FaMapMarkerAlt
-            const markerIcon = document.createElement('div');
-            markerIcon.style.color = '#FF6347';
-            markerIcon.style.fontSize = '16px';
-            markerIcon.innerHTML = `<div>${FaMapMarkerAlt().props.children}</div>`;
-
-            el.appendChild(markerIcon);
-
-            new mapboxgl.Marker(el)
-              .setLngLat(coordinates)
-              .setPopup(
-                new mapboxgl.Popup().setHTML(`
-                  <div>
-                    <img src="${logo}" alt="Business Logo" class="w-10 h-10 mb-2"/>
-                    <h3 class="text-lg font-bold">${title}</h3>
-                    <p>${description}</p>
-                    <p class="text-sm text-gray-600">${address}</p>
-                    <img src="${image}" alt="Deal Image" class="w-full h-20 object-cover mt-2"/>
-                  </div>
-                `)
-              )
-              .addTo(mapInstance);
-          });
-        });
-      })
-      .catch((error) => console.error('Error fetching deals:', error));
+        new mapboxgl.Marker({ color: 'red' })
+          .setLngLat(coordinates)
+          .setPopup(
+            new mapboxgl.Popup().setHTML(`
+              <div>
+                <img src="${logo}" alt="Business Logo" class="w-10 h-10 mb-2"/>
+                <h3 class="text-lg font-bold">${title}</h3>
+                <p>${description}</p>
+                <p class="text-sm text-gray-600">${address}</p>
+                <img src="${image}" alt="Deal Image" class="w-full h-20 object-cover mt-2"/>
+              </div>
+            `)
+          )
+          .addTo(mapInstance);
+      });
+    });
 
     return () => mapInstance.remove();
-  }, []);
+  }, [deals]);
 
-  return <div id="map" className="w-full h-screen"></div>;
+  const handleGoToMyLocation = () => {
+    if (userLocation && map) {
+      map.flyTo({
+        center: userLocation,
+        zoom: 14,
+      });
+    }
+  };
+
+  return (
+    <div className="relative">
+      <div id="map" className="w-full h-screen"></div>
+
+      {/* Show the button only if the location is allowed */}
+      {locationAllowed && (
+        <button
+          onClick={handleGoToMyLocation}
+          className="absolute top-4 left-4 bg-blue-500 text-white p-2 rounded"
+        >
+          Go to My Location
+        </button>
+      )}
+    </div>
+  );
 };
 
 export default MapBox;
