@@ -9,6 +9,7 @@ const MapBox = ({ deals }) => {
   const [map, setMap] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
   const [locationAllowed, setLocationAllowed] = useState(false); // To check if location is allowed
+  const [userMarker, setUserMarker] = useState(null); // Marker for user location
 
   useEffect(() => {
     mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
@@ -28,8 +29,25 @@ const MapBox = ({ deals }) => {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
-          setUserLocation([longitude, latitude]);
+          const coords = [longitude, latitude];
+          setUserLocation(coords);
           setLocationAllowed(true); // Set locationAllowed to true when location is fetched
+
+          // Create a marker for user location
+          const marker = new mapboxgl.Marker({ color: 'blue' })
+            .setLngLat(coords)
+            .setPopup(
+              new mapboxgl.Popup().setHTML(`
+                <div>
+                  <h3 class="font-bold">Your Location</h3>
+                  <p>Latitude: ${latitude.toFixed(4)}</p>
+                  <p>Longitude: ${longitude.toFixed(4)}</p>
+                </div>
+              `)
+            )
+            .addTo(mapInstance);
+
+          setUserMarker(marker);
         },
         (error) => console.error('Error fetching user location:', error)
       );
@@ -78,8 +96,6 @@ const MapBox = ({ deals }) => {
         },
       });
 
-   
-
       // Add individual points layer (restaurant icon)
       mapInstance.addLayer({
         id: 'unclustered-point',
@@ -103,7 +119,7 @@ const MapBox = ({ deals }) => {
         const { coordinates } = feature.geometry;
         const { title, description, address, image, logo } = feature.properties;
 
-        new mapboxgl.Marker({ color: 'red' })
+        new mapboxgl.Marker({ color: 'green' })
           .setLngLat(coordinates)
           .setPopup(
             new mapboxgl.Popup().setHTML(`
@@ -123,6 +139,13 @@ const MapBox = ({ deals }) => {
     return () => mapInstance.remove();
   }, [deals]);
 
+  // Update user marker position when userLocation changes
+  useEffect(() => {
+    if (userMarker && userLocation) {
+      userMarker.setLngLat(userLocation);
+    }
+  }, [userLocation]);
+
   const handleGoToMyLocation = () => {
     if (userLocation && map) {
       map.flyTo({
@@ -136,7 +159,6 @@ const MapBox = ({ deals }) => {
     <div className="relative">
       <div id="map" className="w-full h-screen"></div>
 
-      {/* Show the button only if the location is allowed */}
       {locationAllowed && (
         <button
           onClick={handleGoToMyLocation}
