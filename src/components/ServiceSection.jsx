@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { FaDollarSign, FaRegClock, FaLock } from 'react-icons/fa';  
 
-import saloon from '../assets/saloon.png';
+import saloon from '../assets/Saloon.png';
 import entertainment from '../assets/entertainment.png';
 import dining from '../assets/dining.png';
 import cleaning from '../assets/cleaning.png';
