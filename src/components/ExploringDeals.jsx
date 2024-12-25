@@ -17,7 +17,7 @@ function ExploringDeals() {
               initial={{ opacity: 0, y: -50 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="text-3xl sm:text-4xl lg:text-6xl font-bold mb-4 z-10 text-center md:text-left"
+              className="text-3xl sm:text-4xl lg:text-6xl font-bold mb-4 z-10  md:text-left"
             >
               Get The Best <span className="text-green-500">Deals</span> <br />
               Near By You!
@@ -26,7 +26,7 @@ function ExploringDeals() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.4 }}
-              className="text-sm sm:text-lg text-black font-semibold mb-8 z-10 text-center md:text-left"
+              className="text-sm sm:text-lg text-black font-semibold mb-8 z-10  md:text-left"
             >
               Explore nearby deals on map and buy deals
               to <br />

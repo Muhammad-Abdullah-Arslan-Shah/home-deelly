@@ -11,7 +11,7 @@ import Footer from "../components/Footer";
 
 const Home = () => {
   return (
-    <>
+    <div className="overflow-x-hidden">
       <UpperNotification />
       <Header />
       <ExploringDeals />
@@ -35,8 +35,9 @@ const Home = () => {
       <ContactUs />
       <MapBox />
       <Footer />
-    </>
+    </div>
   );
 };
 
 export default Home;
+
