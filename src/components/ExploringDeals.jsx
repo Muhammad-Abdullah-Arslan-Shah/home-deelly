@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import hotelImage from '../assets/hotel.png'; // Assuming hotel.png is in the correct path
+import hotelImage from '../assets/hotel.png'; 
 import DealsForm from './DealsForm';
 import dummyVideo from '../assets/dummy-video.mp4';
 function ExploringDeals() {

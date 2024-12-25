@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MdNotifications } from 'react-icons/md'; // Import notification icon
+import { MdNotifications } from 'react-icons/md'; 
 
 const UpperNotification = () => {
   const [selectedLanguage, setSelectedLanguage] = useState('English');

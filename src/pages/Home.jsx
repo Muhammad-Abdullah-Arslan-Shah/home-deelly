@@ -10,12 +10,8 @@ import MapBox from "../components/MapBox";
 import Footer from "../components/Footer";
 
 const Home = () => {
-
-
-
   return (
     <>
-    
       <UpperNotification />
       <Header />
       <ExploringDeals />
@@ -28,18 +24,17 @@ const Home = () => {
         cardLimit={3}
       />
 
-       <Deals
+      <Deals
         title="Deals of The Day"
         description="Find deals of the day here & save money with offers and avail wide discounts on everything."
         button="Explore"
         bgcolor="yellow-100"
         cardLimit={3}
       />
-      <AppScreen/>
-      <ContactUs/>
-       <MapBox/> 
-      <Footer/>
-
+      <AppScreen />
+      <ContactUs />
+      <MapBox />
+      <Footer />
     </>
   );
 };

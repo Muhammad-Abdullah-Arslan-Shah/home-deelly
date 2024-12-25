@@ -1,5 +1,5 @@
 import React from 'react';
-import MobileApp from '../assets/MobileApp.png'; // Assuming you have the image in the assets folder
+import MobileApp from '../assets/MobileApp.png'; 
 import googlePlay from '../assets/googlePlay.png';
 import AppStore from '../assets/AppStore.png';
 import Statistics from './Statistics';

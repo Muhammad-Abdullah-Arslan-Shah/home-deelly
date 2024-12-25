@@ -19,7 +19,7 @@ const Statistics = () => {
           setAnimate(true);
         }
       },
-      { threshold: 0.1 } // Trigger when 10% of the component is visible
+      { threshold: 0.1 } 
     );
 
     if (ref.current) {
@@ -50,7 +50,7 @@ const Statistics = () => {
                 end={stat.value}
                 duration={2.5}
                 separator=","
-                decimals={stat.value % 1 !== 0 ? 1 : 0} // Add a decimal if needed
+                decimals={stat.value % 1 !== 0 ? 1 : 0} 
               />
             )}
             {stat.suffix}

@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { FaDollarSign, FaRegClock, FaLock } from 'react-icons/fa';  // Import the required icons
+import { FaDollarSign, FaRegClock, FaLock } from 'react-icons/fa';  
 
 import saloon from '../assets/saloon.png';
 import entertainment from '../assets/entertainment.png';
@@ -38,7 +38,7 @@ const ServiceSection = () => (
 
       <div className='lg:border-r  border-gray-300'>
         <ServiceBlock
-          icon={<FaDollarSign/>} // Replace with FaDollarSign icon
+          icon={<FaDollarSign/>} 
           title="Amazing Last Minute Discounts"
           text="Get Amazing Last Minute Discounts on your favorite categories food, of beauty, getaways & more."
         />
@@ -46,14 +46,14 @@ const ServiceSection = () => (
 
       <div className='lg:border-r  border-gray-300'>
         <ServiceBlock
-          icon={<FaRegClock  />} // Replace with FaRegClock icon
+          icon={<FaRegClock  />} 
           title="Save"
           text="Save Money with our deals of & offers"
         />
       </div>
 
       <ServiceBlock
-        icon={<FaLock />} // Replace with FaLock icon
+        icon={<FaLock />} 
         title="Secure Payments"
         text="The Secure payment methods throughout the checkout process for keeping your data secure & safe."
       />

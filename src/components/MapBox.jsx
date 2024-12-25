@@ -14,7 +14,7 @@ const MapBox = () => {
     const mapInstance = new mapboxgl.Map({
       container: 'map',
       style: 'mapbox://styles/mapbox/streets-v11',
-      center: [55.2708, 25.2048], // Center to Dubai by default
+      center: [55.2708, 25.2048], 
       zoom: 10,
     });
 

@@ -112,7 +112,7 @@ const DealCard = ({ deal }) => {
         </div>
       </div>
 
-      {/* Footer always at the bottom */}
+      
       <div className="mt-auto flex items-center justify-between border-t pt-2 p-4">
         <div className="flex items-center space-x-2">
           <img src={person} alt="person" className="w-6 h-6" />
